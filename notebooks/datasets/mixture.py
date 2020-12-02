@@ -2,12 +2,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import subprocess
+import sys
 import tempfile
 
 from matplotlib.colors import ListedColormap
 from pathlib import Path
 from sklearn.mixture import GaussianMixture
 from sklearn.mixture.gaussian_mixture import _compute_precision_cholesky
+
+sys.path.append(str(Path(__file__).absolute().parents[1]))
+from colors import BLUE, ORANGE
 
 
 def read_data(var):
@@ -62,8 +66,6 @@ def plot(clf):
         np.linspace(px2.min(), px2.max(), num=len(px2) * 10 - 9),
     )
 
-    ORANGE = "#D9A037"
-    BLUE   = "#73B4E3"
     cm = ListedColormap([BLUE, ORANGE])
 
     f, ax = plt.subplots()
