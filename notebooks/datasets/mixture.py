@@ -32,8 +32,17 @@ marginal    = read_data('marginal'  )
 px1         = read_data('px1'       )
 px2         = read_data('px2'       )
 means       = read_data('means'     )
+var         = .2
 
 del read_data
+
+
+def sample(n=1, seed=None):
+    np.random.seed(seed=seed)
+    components = np.random.choice(range(means.shape[0]), size=n)
+    return means[components, :] + np.random.normal(
+        scale=np.sqrt(var), size=(n, 2),
+    ), (components / means.shape[0] >= .5).astype(int)
 
 
 class OptimalBayes(GaussianMixture):
@@ -44,11 +53,12 @@ class OptimalBayes(GaussianMixture):
             covariance_type='spherical',
             means_init=means,
         )
+        self.fit(None)
 
     def fit(self, X, y=None):
         del X, y
         super().fit(means)
-        self.covariances_ = [.2] * self.n_components
+        self.covariances_ = [var] * self.n_components
         self.precisions_cholesky_ = _compute_precision_cholesky(
             self.covariances_, self.covariance_type,
         )

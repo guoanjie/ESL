@@ -1,2 +1,3 @@
 BLUE    = "#73B4E3"
 ORANGE  = "#D9A037"
+PURPLE  = "#9033E7"
