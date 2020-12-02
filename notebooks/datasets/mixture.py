@@ -46,6 +46,7 @@ class OptimalBayes(GaussianMixture):
         )
 
     def fit(self, X, y=None):
+        del X, y
         super().fit(means)
         self.covariances_ = [.2] * self.n_components
         self.precisions_cholesky_ = _compute_precision_cholesky(
