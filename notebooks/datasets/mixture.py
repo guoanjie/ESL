@@ -6,6 +6,8 @@ import tempfile
 
 from matplotlib.colors import ListedColormap
 from pathlib import Path
+from sklearn.mixture import GaussianMixture
+from sklearn.mixture.gaussian_mixture import _compute_precision_cholesky
 
 
 def read_data(var):
@@ -25,9 +27,33 @@ prob        = read_data('prob'      )
 marginal    = read_data('marginal'  )
 px1         = read_data('px1'       )
 px2         = read_data('px2'       )
-meas        = read_data('means'     )
+means       = read_data('means'     )
 
 del read_data
+
+
+class OptimalBayes(GaussianMixture):
+
+    def __init__(self):
+        super().__init__(
+            n_components=means.shape[0],
+            covariance_type='spherical',
+            means_init=means,
+        )
+
+    def fit(self, X, y=None):
+        super().fit(means)
+        self.covariances_ = [.2] * self.n_components
+        self.precisions_cholesky_ = _compute_precision_cholesky(
+            self.covariances_, self.covariance_type,
+        )
+
+    def predict(self, X):
+        return self.predict_proba(X).argmax(axis=1)
+
+    def predict_proba(self, X):
+        proba = super().predict_proba(X)
+        return proba.reshape(proba.shape[0], 2, -1).sum(axis=-1)
 
 
 def plot(clf):
