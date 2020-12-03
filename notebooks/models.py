@@ -39,13 +39,13 @@ class BestSubsetRegression(LinearRegression):
 
 class PrincipalComponentsRegression(LinearRegression):
 
-    def __init__(self, M, **kwargs):
-        self.M = M
+    def __init__(self, n_components, **kwargs):
+        self.n_components = n_components
         super().__init__(**kwargs)
 
     def fit(self, X, y, sample_weight=None):
         from IPython.display import display
-        pca = PCA(n_components=self.M)
+        pca = PCA(n_components=self.n_components)
         X = pca.fit_transform(X)
         super().fit(X, y)
         self.intercept_ -= self.coef_ @ pca.components_ @ pca.mean_
