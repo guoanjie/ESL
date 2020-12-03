@@ -9,7 +9,7 @@ from sklearn.metrics import mean_squared_error
 
 class BestSubsetRegression(LinearRegression):
 
-    def __init__(self, k, **kwargs):
+    def __init__(self, k=None, **kwargs):
         self.k = k
         super().__init__(**kwargs)
 
@@ -39,7 +39,7 @@ class BestSubsetRegression(LinearRegression):
 
 class PrincipalComponentsRegression(LinearRegression):
 
-    def __init__(self, n_components, **kwargs):
+    def __init__(self, n_components=None, **kwargs):
         self.n_components = n_components
         super().__init__(**kwargs)
 
@@ -57,6 +57,11 @@ class PartialLeastSquares(PLSRegression):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+    def get_params(self, deep=True):
+        return {
+            **super().get_params(deep=deep), 'n_components': self.n_components,
+        }
 
     def fit(self, X, y):
         super().fit(X, y)
