@@ -1,11 +1,12 @@
 import numpy as np
 
 from itertools import combinations
+from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 
 
-class BestSubsetLinearRegression(LinearRegression):
+class BestSubsetRegression(LinearRegression):
 
     def __init__(self, k, **kwargs):
         self.k = k
@@ -32,4 +33,20 @@ class BestSubsetLinearRegression(LinearRegression):
         self.intercept_ = best_intercept_
         self.coef_[:] = 0
         self.coef_[list(best_combination)] = best_coef_
+        return self
+
+
+class PrincipalComponentsRegression(LinearRegression):
+
+    def __init__(self, M, **kwargs):
+        self.M = M
+        super().__init__(**kwargs)
+
+    def fit(self, X, y, sample_weight=None):
+        from IPython.display import display
+        pca = PCA(n_components=self.M)
+        X = pca.fit_transform(X)
+        super().fit(X, y)
+        self.intercept_ -= self.coef_ @ pca.components_ @ pca.mean_
+        self.coef_ = np.dot(self.coef_, pca.components_)
         return self
