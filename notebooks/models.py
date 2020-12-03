@@ -1,6 +1,7 @@
 import numpy as np
 
 from itertools import combinations
+from sklearn.cross_decomposition import PLSRegression
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
@@ -49,4 +50,16 @@ class PrincipalComponentsRegression(LinearRegression):
         super().fit(X, y)
         self.intercept_ -= self.coef_ @ pca.components_ @ pca.mean_
         self.coef_ = np.dot(self.coef_, pca.components_)
+        return self
+
+
+class PartialLeastSquares(PLSRegression):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def fit(self, X, y):
+        super().fit(X, y)
+        self.intercept_ = self.y_mean_[0]
+        self.coef_ = self.coef_.squeeze()
         return self
