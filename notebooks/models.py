@@ -67,3 +67,26 @@ class PartialLeastSquares(PLSRegression):
         self.intercept_ = self.y_mean_[0]
         self.coef_ = self.coef_.squeeze()
         return self
+
+
+class ForwardStagewiseRegression(LinearRegression):
+
+    def __init__(self, eps):
+        self.eps = eps
+
+    def fit(self, X, y):
+        X, y = self._validate_data(X, y.copy())
+        self.intercept_ = y.mean()
+        y -= self.intercept_
+        self.coef_ = np.zeros(X.shape[1])
+        self.coef_path_ = self.coef_.copy()
+
+        while True:
+            corr = np.dot(y, X)
+            j = np.argmax(np.abs(corr))
+            delta = self.eps * np.sign(corr[j])
+            if self.coef_[j] * delta < 0:
+                break
+            self.coef_[j] += delta
+            y -= delta * X[:, j]
+            self.coef_path_ = np.vstack([self.coef_path_, self.coef_])
