@@ -44,7 +44,6 @@ class PrincipalComponentsRegression(LinearRegression):
         super().__init__(**kwargs)
 
     def fit(self, X, y, sample_weight=None):
-        from IPython.display import display
         pca = PCA(n_components=self.n_components)
         X = pca.fit_transform(X)
         super().fit(X, y)
