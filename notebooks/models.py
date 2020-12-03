@@ -71,7 +71,7 @@ class PartialLeastSquares(PLSRegression):
 
 class ForwardStagewiseRegression(LinearRegression):
 
-    def __init__(self, eps):
+    def __init__(self, eps=1e-3):
         self.eps = eps
 
     def fit(self, X, y):
