@@ -44,3 +44,4 @@ def plot_lda(*coords, ax=None):
     ax.set_ylabel(f"Coordinate {coords[1]}")
     ax.set_xticklabels([])
     ax.set_yticklabels([])
+    ax.set_title("Linear Discriminant Analysis")
