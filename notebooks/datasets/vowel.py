@@ -16,15 +16,18 @@ y_test = df_test['y']
 
 del data_dir
 
+clf = LinearDiscriminantAnalysis(store_covariance=True)
+clf.fit(X_train, y_train)
+w, v = LA.eig(clf.covariance_)
+W_rsqrt = v @ np.diag(np.power(w, -.5)) @ v.T
+M_ = clf.means_ @ W_rsqrt
+B_ = np.cov(M_.T)
+D, V_ = LA.eig(B_)
+V = - W_rsqrt @ V_
+
+del w, v, W_rsqrt, M_, B_, D, V_
+
 def plot_lda(*coords, ax=None):
-    clf = LinearDiscriminantAnalysis(store_covariance=True)
-    clf.fit(X_train, y_train)
-    w, v = LA.eig(clf.covariance_)
-    W_rsqrt = v @ np.diag(np.power(w, -.5)) @ v.T
-    M_ = clf.means_ @ W_rsqrt
-    B_ = np.cov(M_.T)
-    D, V_ = LA.eig(B_)
-    V = - W_rsqrt @ V_
     palette = [
         "#000000", "#0718F5", "#963330", "#9133E7", "#ED9135", "#7DFBFD",
         "#74808E", "#FBEC98", "#000000", "#E73323", "#7DFA4C",
