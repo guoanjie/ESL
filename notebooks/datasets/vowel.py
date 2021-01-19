@@ -33,12 +33,11 @@ def plot_lda(*coords, ax=None):
         "#74808E", "#FBEC98", "#000000", "#E73323", "#7DFA4C",
     ]
     ax = (X_train @ V).plot.scatter(
-        coords[0] - 1, coords[1] - 1, ax=ax, alpha=.25,
-        c=y_train.map(lambda y: palette[y - 1]),
+        coords[0] - 1, coords[1] - 1, ax=ax, c='none', edgecolors=palette,
     )
     ax = pd.DataFrame(data=clf.means_ @ V).plot.scatter(
-        coords[0] - 1, coords[1] - 1, ax=ax,
-        c=palette,
+        coords[0] - 1, coords[1] - 1, ax=ax, c='none', edgecolors=palette,
+        linewidth=5,
     )
     ax.set_xlabel(f"Coordinate {coords[0]}")
     ax.set_ylabel(f"Coordinate {coords[1]}")
