@@ -83,14 +83,14 @@ def plot(clf):
     cm = ListedColormap([BLUE, ORANGE])
 
     f, ax = plt.subplots()
-    clf.fit(x, y)
+    clf.fit(X, y)
 
     Z = (clf.predict(np.c_[xx.ravel(), yy.ravel()]) > .5).astype(float)
 
     Z = Z.reshape(xx.shape)
     ax.contourf(xx, yy, Z, cmap=cm, alpha=.2)
 
-    ax.scatter(x[:, 0], x[:, 1], c=y, cmap=cm)
+    ax.scatter(X[:, 0], X[:, 1], c=y, cmap=cm)
 
     ax.set_xlim(xx.min() - .1, xx.max() + .1)
     ax.set_ylim(yy.min() - .1, yy.max() + .1)
