@@ -27,7 +27,7 @@ def read_data(var):
         return pd.read_csv(fp.name).values.squeeze()
 
 
-x           = read_data('x'         )
+X           = read_data('x'         )
 y           = read_data('y'         )
 xnew        = read_data('xnew'      )
 prob        = read_data('prob'      )
