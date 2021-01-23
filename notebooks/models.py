@@ -1,6 +1,7 @@
 import numpy as np
 
-from itertools import combinations
+from itertools import combinations, product
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.cross_decomposition import PLSRegression
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression
@@ -90,3 +91,46 @@ class ForwardStagewiseRegression(LinearRegression):
             self.coef_[j] += delta
             y -= delta * X[:, j]
             self.coef_path_ = np.vstack([self.coef_path_, self.coef_])
+
+
+class NaturalCubicSplineBasis(BaseEstimator, TransformerMixin):
+
+    def __init__(self, dof, tensor_product=False):
+        self.dof = dof
+        self.tensor_product = tensor_product
+
+    def fit(self, X, y=None):
+        q = np.linspace(0, 1, self.dof + 1)
+        self.knots = []
+        for i in range(X.shape[1]):
+            self.knots.append(np.unique(np.quantile(X[:, i], q)))
+        return self
+
+    def transform(self, X):
+        basis = []
+        for i in range(X.shape[1]):
+            basis.append(self._basis_1d(X[:, i:i+1], self.knots[i]))
+        if self.tensor_product:
+            basis.append(self._tensor_product(basis))
+        return np.hstack(basis)
+
+    @classmethod
+    def _basis_1d(cls, X, knots):
+        basis = [X]
+        dk_last = cls._dk(X, knots[-2], knots[-1])
+        for knot in knots[:-2]:
+            basis.append(cls._dk(X, knot, knots[-1]) - dk_last)
+        return np.hstack(basis)
+
+    @classmethod
+    def _dk(cls, X, knot, knot_last):
+        return np.power((X - knot).clip(0), 3) / (knot_last - knot)
+
+    @classmethod
+    def _tensor_product(cls, basis_1d):
+        return np.hstack([
+            np.prod(
+                [basis_1d[d][:, i:i+1] for d, i in enumerate(indices)], axis=0,
+            )
+            for indices in product(*[range(b.shape[1]) for b in basis_1d])
+        ])
