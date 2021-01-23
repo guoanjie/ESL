@@ -4,11 +4,14 @@ import pandas as pd
 import subprocess
 import sys
 import tempfile
+import warnings
 
 from matplotlib.colors import ListedColormap
 from pathlib import Path
 from sklearn.mixture import GaussianMixture
-from sklearn.mixture.gaussian_mixture import _compute_precision_cholesky
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", category=FutureWarning)
+    from sklearn.mixture.gaussian_mixture import _compute_precision_cholesky
 
 sys.path.append(str(Path(__file__).absolute().parents[1]))
 from colors import BLUE, ORANGE
@@ -82,12 +85,7 @@ def plot(clf):
     f, ax = plt.subplots()
     clf.fit(x, y)
 
-    if hasattr(clf, "decision_function"):
-        Z = clf.decision_function(np.c_[xx.ravel(), yy.ravel()])
-    elif hasattr(clf, "predict_proba"):
-        Z = clf.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
-    else:
-        Z = (clf.predict(np.c_[xx.ravel(), yy.ravel()]) > .5).astype(float)
+    Z = (clf.predict(np.c_[xx.ravel(), yy.ravel()]) > .5).astype(float)
 
     Z = Z.reshape(xx.shape)
     ax.contourf(xx, yy, Z, cmap=cm, alpha=.2)
